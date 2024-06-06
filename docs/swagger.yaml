@@ -1,0 +1,223 @@
+basePath: /
+definitions:
+  main.Order:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      product:
+        $ref: '#/definitions/main.Product'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  main.Product:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  main.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      orders:
+        items:
+          $ref: '#/definitions/main.Order'
+        type: array
+      password:
+        type: string
+      role:
+        description: '''admin'' or ''user'''
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample e-commerce server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Ecommerce API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user and return a JWT token
+      parameters:
+      - description: User Info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login a user
+  /orders:
+    get:
+      description: Get all orders for the logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Order'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: Get user orders
+    post:
+      consumes:
+      - application/json
+      description: Create a new order for the logged-in user
+      parameters:
+      - description: Order Info
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/main.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Order'
+      security:
+      - ApiKeyAuth: []
+      summary: Create an order
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product (Admin only)
+      parameters:
+      - description: Product Info
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/main.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new product
+  /products/{id}:
+    delete:
+      description: Delete a product (Admin only)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a product
+    put:
+      consumes:
+      - application/json
+      description: Update a product (Admin only)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product Info
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/main.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a product
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with a username and password
+      parameters:
+      - description: User Info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.User'
+      summary: Register a new user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
